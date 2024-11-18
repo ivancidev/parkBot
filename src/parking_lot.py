@@ -10,35 +10,47 @@ class ParkingLot:
         self.last_displayed_state = list(self.spaces)  # Estado anterior para comparación
 
     def park_vehicle(self, vehicle_id):
-        for i in range(len(self.spaces)):
-            if self.spaces[i] == 0:  # Espacio vacío
-                self.spaces[i] = 1  # Marca el espacio como ocupado
-                self.vehicle_positions.append((vehicle_id, i))  # Guarda la posición del vehículo
-                return i  # Retorna el espacio donde se estacionó el vehículo
-        return -1  # No hay espacio disponible
+        """Estaciona un vehículo en el primer espacio disponible más cercano."""
+        # Lista de los espacios disponibles y su proximidad
+        available_spaces = [i for i in range(self.total_spaces) if self.spaces[i] == 0]
+        
+        # Ordenar los espacios disponibles por proximidad (espacios más cercanos primero)
+        sorted_available_spaces = sorted(available_spaces, key=lambda x: abs(x - (self.total_spaces // 2)))
+        
+        # Intentamos estacionar el vehículo en el primer espacio disponible más cercano
+        for space in sorted_available_spaces:
+            if self.spaces[space] == 0:  # Si el espacio está vacío
+                self.spaces[space] = vehicle_id  # Marca el espacio con el ID del vehículo
+                return space  # Devuelve el índice del espacio ocupado
+        return -1  # Si no hay espacios disponibles, devuelve -1
 
     def park_vehicles(self, num_vehicles):
-        # Asegura que solo se estacionen los vehículos solicitados
+        """Estaciona múltiples vehículos, priorizando los espacios cercanos."""
         parked_vehicles = 0
+        
         for vehicle_id in range(num_vehicles):
+            # El agente intenta estacionar el vehículo en el primer espacio disponible más cercano
             parked_space = self.park_vehicle(vehicle_id)
-            if parked_space != -1:
+            
+            if parked_space != -1:  # Si se estacionó con éxito
                 parked_vehicles += 1
             else:
-                break  # Si no hay más espacio, sale del bucle
+                print("No hay espacio disponible para estacionar más vehículos.")
+                break
+
         return parked_vehicles
 
     def reset(self):
-        # Resetea el estacionamiento
+        """Resetea el estacionamiento."""
         self.spaces = [0] * self.total_spaces
         self.vehicle_positions = []
         self.last_displayed_state = list(self.spaces)  # Resetea el estado mostrado
 
     def display_parking_lot(self):
-        # Muestra el estado del estacionamiento solo si ha cambiado
+        """Muestra el estado del estacionamiento solo si ha cambiado."""
         if self.spaces != self.last_displayed_state:
             print("Estado actual del estacionamiento:")
             for i in range(self.total_spaces):
-                print(f"Espacio {i + 1}: {'Ocupado' if self.spaces[i] == 1 else 'Vacío'}")
+                print(f"Espacio {i + 1}: {'Ocupado' if self.spaces[i] != 0 else 'Vacío'}")
             print("\n")
             self.last_displayed_state = list(self.spaces)  # Actualizamos el estado mostrado

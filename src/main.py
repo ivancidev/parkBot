@@ -22,12 +22,15 @@ def main():
     parking_lot = ParkingLot(total_spaces)
 
     # Puedes seguir entrenando el agente cargado
-    num_vehicles = int(input("Ingrese el número de vehículos a estacionar: "))
+    num_vehicles = min(int(input("Ingrese el número de vehículos a estacionar: ")), total_spaces)
+
     
     # Entrenar el agente con varios episodios
-    for _ in range(10):  # Entrena el agente en 10 episodios
+    for _ in range(10):  # Entrena en 10 episodios
+        parking_lot.reset()  # Limpia el estado del estacionamiento
         reward = train_agent(agent, parking_lot, num_vehicles)
         print(f"Total reward en este episodio: {reward}")
+
     
     # Guardar el modelo nuevamente después de entrenar
     save_model(agent)
