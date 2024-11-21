@@ -1,13 +1,12 @@
+from parking_lot import ParkingLot
+from training import load_model 
 import tkinter as tk
 from tkinter import messagebox
-from parking_lot import ParkingLot
-from parking_agent import ParkingAgent
-from training import train_agent, save_model, load_model
-import os
-import time  # Para hacer pausas en la animación
+import time
 
-# Configuración de parámetros
-TOTAL_SPACES = 12  # 6 espacios a la izquierda y 6 a la derecha
+TOTAL_SPACES = 12 
+
+agent = load_model("parking_agent.pkl")  # Cambia la ruta si guardaste el modelo en otro lugar
 
 # Función para actualizar la matriz visual
 def update_parking_display():
@@ -19,25 +18,32 @@ def update_parking_display():
         color = "red" if parking_lot.spaces[i] != 0 else "green"
         right_buttons[i - 6].config(bg=color, text=f"R{i - 5}" if parking_lot.spaces[i] == 0 else f"Vehículo {parking_lot.spaces[i]}")
 
-# Función para manejar el estacionamiento con animación
+# Función para manejar el estacionamiento con el agente inteligente
 def park_vehicles():
     try:
-        num_vehicles = int(vehicle_entry.get())  # Número ingresado
+        num_vehicles = int(vehicle_entry.get()) 
         if num_vehicles <= 0:
             messagebox.showerror("Error", "Por favor, ingresa un número mayor a 0.")
             return
 
-        spaces_occupied = 0  # Contador de vehículos estacionados en esta llamada
-
-        # Estacionar los vehículos con animación
+        spaces_occupied = 0 
         for vehicle_id in range(1, num_vehicles + 1):
-            space = parking_lot.park_vehicle(vehicle_id)
+            state = parking_lot.spaces  
+            action = agent.choose_action(state)  
+            
+            space = parking_lot.park_vehicle(vehicle_id, action)
             if space != -1:
-                animate_parking(vehicle_id, space)  # Animar la llegada del vehículo
+                animate_parking(vehicle_id, space) 
+                reward = 1  
                 spaces_occupied += 1
-                time.sleep(0.5)  # Esperar un poco para la animación
-            if spaces_occupied == num_vehicles:
-                break
+            else:
+                reward = -1 
+            
+            # Actualizar la tabla Q del agente
+            next_state = parking_lot.spaces
+            agent.update_q_table(action, reward, next_state)
+            
+            time.sleep(0.5)  # Esperar un poco para la animación
 
         if spaces_occupied > 0:
             messagebox.showinfo("Éxito", f"{spaces_occupied} vehículo(s) estacionado(s).")
@@ -47,6 +53,7 @@ def park_vehicles():
         update_parking_display()  # Actualizar la visualización
     except ValueError:
         messagebox.showerror("Error", "Por favor, ingresa un número válido.")
+
 
 # Función de animación para mover los vehículos
 def animate_parking(vehicle_id, space):

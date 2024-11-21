@@ -7,7 +7,7 @@ def main():
     model_filename = "parking_agent.pkl"
     
     # Definir el número total de espacios (siempre debe estar disponible)
-    total_spaces = 10  # Número total de espacios
+    total_spaces = 12  # Número total de espacios
     
     if os.path.exists(model_filename):
         # Cargar el modelo guardado

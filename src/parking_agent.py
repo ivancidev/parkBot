@@ -1,6 +1,5 @@
 import random
 import numpy as np
-import pickle
 class ParkingAgent:
     def __init__(self, total_spaces, learning_rate=0.1, discount_factor=0.9):
         self.total_spaces = total_spaces
@@ -12,9 +11,8 @@ class ParkingAgent:
         self.min_exploration_rate = 0.01
 
     def choose_action(self, state):
-        # Exploración vs explotación
         if random.uniform(0, 1) < self.exploration_rate:
-            return random.choice(range(self.total_spaces))  # Exploración: elige un espacio al azar
+            return random.choice(range(self.total_spaces))  
         else:
             return np.argmax(self.q_table)  # Explotación: elige el mejor espacio basado en Q
 
