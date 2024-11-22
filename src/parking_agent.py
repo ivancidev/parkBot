@@ -27,7 +27,10 @@ class ParkingAgent:
                            self.learning_rate * (reward + self.discount_factor * best_future_q)
         print(f"Actualización Q para acción {action}: {self.q_table[action]}")
 
-
+    def print_q_table(self):
+        print("Tabla Q:")
+        for i, q_value in enumerate(self.q_table):
+            print(f"Espacio {i + 1}: Q-value = {q_value:.2f}")
 
 
     def decay_exploration_rate(self):
