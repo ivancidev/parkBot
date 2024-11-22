@@ -14,7 +14,7 @@ class ParkingAgent:
         if random.uniform(0, 1) < self.exploration_rate:
             return random.choice(range(self.total_spaces))  
         else:
-            return np.argmax(self.q_table)  # Explotación: elige el mejor espacio basado en Q
+            return np.argmax(self.q_table)  # Explotación: elige el mejor espacio basado enParkingLot.spaces Q
 
     def update_q_table(self, action, reward, next_state):
         # Actualización de la tabla Q

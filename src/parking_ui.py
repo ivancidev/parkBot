@@ -4,19 +4,22 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 
-TOTAL_SPACES = 12 
+TOTAL_SPACES = 16
 
 agent = load_model("parking_agent.pkl")  # Cambia la ruta si guardaste el modelo en otro lugar
 
 # Función para actualizar la matriz visual
 def update_parking_display():
-    for i in range(6):
+    # Actualizar los botones del lado izquierdo
+    for i in range(len(left_buttons)):
         color = "red" if parking_lot.spaces[i] != 0 else "green"
         left_buttons[i].config(bg=color, text=f"L{i + 1}" if parking_lot.spaces[i] == 0 else f"Vehículo {parking_lot.spaces[i]}")
 
-    for i in range(6, TOTAL_SPACES):
-        color = "red" if parking_lot.spaces[i] != 0 else "green"
-        right_buttons[i - 6].config(bg=color, text=f"R{i - 5}" if parking_lot.spaces[i] == 0 else f"Vehículo {parking_lot.spaces[i]}")
+    # Actualizar los botones del lado derecho
+    for i in range(len(right_buttons)):
+        color = "red" if parking_lot.spaces[i + len(left_buttons)] != 0 else "green"
+        right_buttons[i].config(bg=color, text=f"R{i + 1}" if parking_lot.spaces[i + len(left_buttons)] == 0 else f"Vehículo {parking_lot.spaces[i + len(left_buttons)]}")
+
 
 # Función para manejar el estacionamiento con el agente inteligente
 def park_vehicles():
@@ -24,6 +27,10 @@ def park_vehicles():
         num_vehicles = int(vehicle_entry.get()) 
         if num_vehicles <= 0:
             messagebox.showerror("Error", "Por favor, ingresa un número mayor a 0.")
+            return
+        
+        if num_vehicles > TOTAL_SPACES:
+            messagebox.showerror("Error", f"El número máximo de vehículos es {TOTAL_SPACES}.")
             return
 
         spaces_occupied = 0 
@@ -107,8 +114,13 @@ parking_frame.pack(pady=20)
 left_frame = tk.Frame(parking_frame)
 left_frame.grid(row=0, column=0, padx=20)
 
+# Calcular el número de botones para cada lado
+left_side = TOTAL_SPACES // 2
+right_side = TOTAL_SPACES - left_side
+
+# Crear botones dinámicamente para el lado izquierdo
 left_buttons = []
-for i in range(6):
+for i in range(left_side):
     button = tk.Button(left_frame, text=f"L{i + 1}", width=10, height=2, bg="green")
     button.grid(row=i // 2, column=i % 2, padx=5, pady=5)
     left_buttons.append(button)
@@ -117,8 +129,9 @@ for i in range(6):
 right_frame = tk.Frame(parking_frame)
 right_frame.grid(row=0, column=2, padx=20)
 
+# Crear botones dinámicamente para el lado derecho
 right_buttons = []
-for i in range(6):
+for i in range(right_side):
     button = tk.Button(right_frame, text=f"R{i + 1}", width=10, height=2, bg="green")
     button.grid(row=i // 2, column=i % 2, padx=5, pady=5)
     right_buttons.append(button)

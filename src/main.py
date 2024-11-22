@@ -5,9 +5,7 @@ import os
 
 def main():
     model_filename = "parking_agent.pkl"
-    
-    # Definir el número total de espacios (siempre debe estar disponible)
-    total_spaces = 12  # Número total de espacios
+    total_spaces = 16  # Número total de espacios
     
     if os.path.exists(model_filename):
         # Cargar el modelo guardado
@@ -31,8 +29,6 @@ def main():
         reward = train_agent(agent, parking_lot, num_vehicles)
         print(f"Total reward en este episodio: {reward}")
 
-    
-    # Guardar el modelo nuevamente después de entrenar
     save_model(agent)
     print("Modelo guardado después del entrenamiento.")
 
