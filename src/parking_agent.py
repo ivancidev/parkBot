@@ -12,14 +12,23 @@ class ParkingAgent:
 
     def choose_action(self, state):
         if random.uniform(0, 1) < self.exploration_rate:
-            return random.choice(range(self.total_spaces))  
+        # Elegir aleatoriamente entre espacios vacíos
+            available_spaces = [i for i, space in enumerate(state) if space == 0]
+            return random.choice(available_spaces) if available_spaces else -1
         else:
-            return np.argmax(self.q_table)  # Explotación: elige el mejor espacio basado enParkingLot.spaces Q
+        # Explotar la mejor acción basada en Q
+            return np.argmax(self.q_table)
 
     def update_q_table(self, action, reward, next_state):
-        # Actualización de la tabla Q
+        if reward == -1:  # Penalización para acciones inválidas
+            print(f"Penalizando acción inválida: {action}")
         best_future_q = np.max(self.q_table[next_state])
-        self.q_table[action] = (1 - self.learning_rate) * self.q_table[action] + self.learning_rate * (reward + self.discount_factor * best_future_q)
+        self.q_table[action] = (1 - self.learning_rate) * self.q_table[action] + \
+                           self.learning_rate * (reward + self.discount_factor * best_future_q)
+        print(f"Actualización Q para acción {action}: {self.q_table[action]}")
+
+
+
 
     def decay_exploration_rate(self):
         self.exploration_rate = max(self.min_exploration_rate, self.exploration_rate * self.exploration_decay)

@@ -12,10 +12,20 @@ class ParkingLot:
 
     # Método para estacionar un vehículo en un espacio sugerido
     def park_vehicle(self, vehicle_id, suggested_space):
-        if 0 <= suggested_space < self.total_spaces and self.spaces[suggested_space] == 0:
-            self.spaces[suggested_space] = vehicle_id
-            return suggested_space  # Retorna el espacio donde se estacionó
-        return -1  # Retorna -1 si no fue posible estacionar
+        attempts = 0
+        while attempts < self.total_spaces:  # Intenta todos los espacios posibles
+            if 0 <= suggested_space < self.total_spaces and self.spaces[suggested_space] == 0:
+                self.spaces[suggested_space] = vehicle_id
+                return suggested_space
+            else:
+                print(f"Espacio {suggested_space} no disponible o fuera de rango.")
+        # Intenta el siguiente espacio circularmente
+            suggested_space = (suggested_space + 1) % self.total_spaces
+            attempts += 1
+        return -1  # No se pudo estacionar
+
+
+
 
     def park_vehicles(self, num_vehicles):
         parked_vehicles = []
