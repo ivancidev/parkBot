@@ -24,7 +24,7 @@ def main():
 
     
     # Entrenar el agente con varios episodios
-    for _ in range(10):  # Entrena en 10 episodios
+    for _ in range(1):  # Entrena en 10 episodios
         parking_lot.reset()  # Limpia el estado del estacionamiento
         reward = train_agent(agent, parking_lot, num_vehicles)
         print(f"Total reward en este episodio: {reward}")

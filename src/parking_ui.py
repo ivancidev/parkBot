@@ -110,29 +110,21 @@ def park_vehicles():
     except ValueError:
         messagebox.showerror("Error", "Por favor, ingresa un número válido.")
 
-
 # Función de animación para mover los vehículos
-def animate_parking(vehicle_id, space):
-    x_start, y_start = 0, 300  # Posición inicial del vehículo
-    x_dest, y_dest = parking_coordinates[space]  # Coordenadas del espacio destino
+def animate_parking(vehicle_id, space, start_position=(0, 0)):
+    x_start, y_start = start_position
+    x_dest, y_dest = parking_coordinates[space]
     
-    # Crear el cuerpo del coche como un rectángulo
     car_body = canvas.create_rectangle(x_start, y_start, x_start + VEHICLE_WIDTH, y_start + VEHICLE_HEIGHT, fill="orange")
-
-    # Crear las ruedas (círculos)
     front_wheel = canvas.create_oval(x_start + 5, y_start + VEHICLE_HEIGHT - wheel_height / 2, x_start + 5 + wheel_width, y_start + VEHICLE_HEIGHT + wheel_height / 2, fill="black")
     rear_wheel = canvas.create_oval(x_start + VEHICLE_WIDTH - wheel_width - 5, y_start + VEHICLE_HEIGHT - wheel_height / 2, x_start + VEHICLE_WIDTH - 5, y_start + VEHICLE_HEIGHT + wheel_height / 2, fill="black")
+    window1 = canvas.create_rectangle(x_start + 10, y_start + 5, x_start + 10 + window_width, y_start + 5 + window_height, fill="lightblue")
+    window2 = canvas.create_rectangle(x_start + window_width + 15, y_start + 5, x_start + 2 * window_width + 15, y_start + 5 + window_height, fill="lightblue")
+    window3 = canvas.create_rectangle(x_start + 2 * window_width + 20, y_start + 5, x_start + 3 * window_width + 20, y_start + 5 + window_height, fill="lightblue")
 
-    # Crear las tres ventanas del coche
-    window1 = canvas.create_rectangle(x_start + 10, y_start + 5, x_start + 10 + window_width, y_start + 5 + window_height, fill="lightblue")  # Ventana 1
-    window2 = canvas.create_rectangle(x_start + window_width + 15, y_start + 5, x_start + 2 * window_width + 15, y_start + 5 + window_height, fill="lightblue")  # Ventana 2
-    window3 = canvas.create_rectangle(x_start + 2 * window_width + 20, y_start + 5, x_start + 3 * window_width + 20, y_start + 5 + window_height, fill="lightblue")  # Ventana 3
-
-    # Agrupar todos los componentes del vehículo en una lista
     vehicle_parts = [car_body, front_wheel, rear_wheel, window1, window2, window3]
-
-    # Lógica de movimiento lateral (izquierda o derecha según si es impar o par)
     step = 5
+
     while x_start < x_dest or y_start > y_dest:
         if x_start < x_dest:
             for part in vehicle_parts:
@@ -145,7 +137,6 @@ def animate_parking(vehicle_id, space):
         root.update()
         time.sleep(0.05)
 
-    # Eliminar todos los componentes del vehículo cuando llegue a su destino
     for part in vehicle_parts:
         canvas.delete(part)
  
