@@ -111,7 +111,7 @@ def park_vehicles():
         messagebox.showerror("Error", "Por favor, ingresa un número válido.")
 
 # Función de animación para mover los vehículos
-def animate_parking(vehicle_id, space, start_position=(0, 0)):
+def animate_parking(vehicle_id, space, start_position=(0, 300)):
     x_start, y_start = start_position
     x_dest, y_dest = parking_coordinates[space]
     
