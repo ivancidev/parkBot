@@ -18,10 +18,8 @@ class ParkingLot:
                 self.spaces[suggested_space] = vehicle_id
                 return suggested_space
             else:
-                print(f"Espacio {suggested_space} no disponible o fuera de rango.")
-        # Intenta el siguiente espacio circularmente
-            suggested_space = (suggested_space + 1) % self.total_spaces
-            attempts += 1
+                suggested_space = (suggested_space + 1) % self.total_spaces
+                attempts += 1
         return -1  # No se pudo estacionar
 
 

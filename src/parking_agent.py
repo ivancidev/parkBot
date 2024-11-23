@@ -25,7 +25,6 @@ class ParkingAgent:
         best_future_q = np.max(self.q_table[next_state])
         self.q_table[action] = (1 - self.learning_rate) * self.q_table[action] + \
                            self.learning_rate * (reward + self.discount_factor * best_future_q)
-        print(f"Actualización Q para acción {action}: {self.q_table[action]}")
 
     def print_q_table(self):
         print("Tabla Q:")

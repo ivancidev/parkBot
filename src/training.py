@@ -23,9 +23,6 @@ def train_agent(agent, parking_lot, num_vehicles):
     parking_lot.display_parking_lot()
     agent.decay_exploration_rate()
 
-    # Imprimir la tabla Q actualizada
-    print(f"Tabla Q actualizada:\n{agent.q_table}")
-
     print(f"Total reward en este episodio: {total_reward}")
     return total_reward
 
