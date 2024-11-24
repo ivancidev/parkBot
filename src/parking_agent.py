@@ -5,28 +5,18 @@ class ParkingAgent:
         self.total_spaces = total_spaces
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
-        self.q_table = np.zeros(total_spaces)
-        self.exploration_rate = 1.0
+        self.q_table = np.zeros(total_spaces)  # Inicializa una tabla de Q con valores nulos
+        self.exploration_rate = 1.0  # Tasa de exploración (comienza explorando mucho)
         self.exploration_decay = 0.995
         self.min_exploration_rate = 0.01
-        
-    def calculate_distances(self, state, start_position):
-        """Calcula las distancias desde el punto inicial a los espacios vacíos."""
-        distances = []
-        for i, space in enumerate(state):
-            if space == 0:  # Solo considerar espacios vacíos
-                distance = abs(start_position - i)
-                distances.append((distance, i))
-        return sorted(distances)  # Ordenar por distancia
 
-    def choose_action(self, state, start_position=0):
-        """Selecciona un espacio basado en distancia o exploración."""
+    def choose_action(self, state):
         if random.uniform(0, 1) < self.exploration_rate:
-            # Explorar: Elegir aleatoriamente entre los más cercanos
-            distances = self.calculate_distances(state, start_position)
-            return distances[0][1] if distances else -1
+        # Elegir aleatoriamente entre espacios vacíos
+            available_spaces = [i for i, space in enumerate(state) if space == 0]
+            return random.choice(available_spaces) if available_spaces else -1
         else:
-            # Explotar: Elegir el mejor espacio basado en Q
+        # Explotar la mejor acción basada en Q
             return np.argmax(self.q_table)
 
     def update_q_table(self, action, reward, next_state):

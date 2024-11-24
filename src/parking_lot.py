@@ -2,6 +2,12 @@ class ParkingLot:
     def __init__(self, total_spaces):
         self.total_spaces = total_spaces
         self.spaces = [0] * total_spaces  # Todos los espacios vacíos
+        self.vehicle_types = {}  # Diccionario para asociar vehículos con sus tipos
+        self.parking_rules = {
+            "pequeño": range(0, total_spaces // 2),
+            "mediano": range(total_spaces // 2, total_spaces),
+            "grande": range(total_spaces // 2, total_spaces)  # Solo en espacios grandes
+        }
 
     def find_empty_space(self):
         """Encuentra el primer espacio vacío."""
@@ -11,15 +17,22 @@ class ParkingLot:
         return None
 
     # Método para estacionar un vehículo en un espacio sugerido
-    def park_vehicle(self, vehicle_id, suggested_space):
+    def park_vehicle(self, vehicle_id, suggested_space, vehicle_type="pequeño"):
+        valid_spaces = self.parking_rules.get(vehicle_type, [])
         attempts = 0
-        while attempts < self.total_spaces:  # Intenta todos los espacios posibles
-            if 0 <= suggested_space < self.total_spaces and self.spaces[suggested_space] == 0:
+
+        while attempts < self.total_spaces:
+            if (
+                suggested_space in valid_spaces 
+                and self.spaces[suggested_space] == 0
+            ):
                 self.spaces[suggested_space] = vehicle_id
+                self.vehicle_types[vehicle_id] = vehicle_type
                 return suggested_space
             else:
                 suggested_space = (suggested_space + 1) % self.total_spaces
                 attempts += 1
+
         return -1  # No se pudo estacionar
 
 

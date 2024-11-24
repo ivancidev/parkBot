@@ -22,6 +22,13 @@ root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
 
 parking_lot = ParkingLot(TOTAL_SPACES)
 
+# Entrada para tipo de vehículo
+vehicle_type_label = tk.Label(root, text="Tipo de vehículo:")
+vehicle_type_label.pack()
+vehicle_type_var = tk.StringVar(value="pequeño")
+vehicle_type_menu = tk.OptionMenu(root, vehicle_type_var, "pequeño", "mediano", "grande")
+vehicle_type_menu.pack(pady=5)
+
 # Título
 title_label = tk.Label(root, text="Simulador de Estacionamiento", font=("Arial", 16))
 title_label.pack(pady=10)
@@ -75,40 +82,42 @@ def update_parking_display():
 # Función para manejar el estacionamiento con el agente inteligente
 def park_vehicles():
     try:
-        num_vehicles = int(vehicle_entry.get()) 
+        num_vehicles = int(vehicle_entry.get())
+        vehicle_type = vehicle_type_var.get()  # Tipo seleccionado
+
         if num_vehicles <= 0:
             messagebox.showerror("Error", "Por favor, ingresa un número mayor a 0.")
             return
-        
+
         if num_vehicles > TOTAL_SPACES:
             messagebox.showerror("Error", f"El número máximo de vehículos es {TOTAL_SPACES}.")
             return
 
-        spaces_occupied = 0 
+        spaces_occupied = 0
         for vehicle_id in range(1, num_vehicles + 1):
-            state = parking_lot.spaces  
-            action = agent.choose_action(state)  
+            state = parking_lot.spaces
+            action = agent.choose_action(state)
             
-            space = parking_lot.park_vehicle(vehicle_id, action)
+            space = parking_lot.park_vehicle(vehicle_id, action, vehicle_type)
             if space != -1:
-                animate_parking(vehicle_id, space) 
-                reward = 1  
+                animate_parking(vehicle_id, space)
+                reward = 1
                 spaces_occupied += 1
             else:
-                reward = -1 
-            
-            # Actualizar la tabla Q del agente
+                reward = -1
+
             next_state = parking_lot.spaces
             agent.update_q_table(action, reward, next_state)
+
+        update_parking_display()
 
         if spaces_occupied > 0:
             messagebox.showinfo("Éxito", f"{spaces_occupied} vehículo(s) estacionado(s).")
         else:
             messagebox.showinfo("Lleno", "No hay espacio disponible para estacionar.")
-
-        update_parking_display()  
     except ValueError:
         messagebox.showerror("Error", "Por favor, ingresa un número válido.")
+
 
 # Función de animación para mover los vehículos
 def animate_parking(vehicle_id, space, start_position=(0, 300)):
