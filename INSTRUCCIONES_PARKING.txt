@@ -35,6 +35,13 @@ Verifica que el entorno virtual esté activo:
 
 Deberías ver el prefijo (env) al inicio de tu terminal.
 
+Instala las dependencias
+ 
+    pip install -r requirements.txt
+
+Instalar paquetes:
+    pip install gym gymnasium stable-baselines3 numpy
+
 Cómo Ejecutar el Programa
 En la carpeta raíz el siguiente comando:
 cd src
