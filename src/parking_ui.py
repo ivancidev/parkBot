@@ -19,6 +19,7 @@ agent = ParkingAgent(total_spaces=16)
 class ParkingLot:
     def __init__(self, total_spaces):
         self.update_total_spaces(total_spaces)
+        self.vehicle_counters = {'pequeño': 0, 'mediano': 0, 'grande': 0}  # Contadores por tipo de vehículo
 
     def update_total_spaces(self, total_spaces):
         self.spaces = [0] * total_spaces
@@ -28,10 +29,11 @@ class ParkingLot:
 
     def park_vehicle(self, vehicle_id, space, vehicle_type):
         if self.spaces[space] == 0 and agent.is_space_compatible(self.space_types[space], vehicle_type):
-            self.spaces[space] = vehicle_id
+            self.vehicle_counters[vehicle_type] += 1  # Incrementa el contador del tipo de vehículo
+            vehicle_number = self.vehicle_counters[vehicle_type]
+            self.spaces[space] = {'id': vehicle_id, 'type': vehicle_type, 'number': vehicle_number}  # Almacena el número del auto
             return space
         return -1
-
 
 # Función de animación para mover los vehículos
 def animate_parking(vehicle_id, space, start_position=(0, 300)):
@@ -68,14 +70,17 @@ def animate_parking(vehicle_id, space, start_position=(0, 300)):
 def update_parking_display():
     for i, (rect, text) in enumerate(parking_buttons):
         if i < len(parking_lot.spaces) and parking_lot.spaces[i] != 0:
+            vehicle_info = parking_lot.spaces[i]
             canvas.itemconfig(rect, fill="red")
-            canvas.itemconfig(text, text=f"Vehículo {parking_lot.spaces[i]}")
+            canvas.itemconfig(
+                text, 
+                text=f"Vehículo\n{vehicle_info['type']} {vehicle_info['number']}"
+            )  # Muestra el tipo y número del vehículo
         else:
             space_type = parking_lot.space_types[i]
             color = "lightgreen" if space_type == "pequeño" else "lightblue" if space_type == "mediano" else "orange"
             canvas.itemconfig(rect, fill=color)
             canvas.itemconfig(text, text=f"S{i + 1}")
-
 
 # Función para redimensionar el lienzo al tamaño de la ventana
 def resize_canvas(event):
