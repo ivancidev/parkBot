@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 import time
-from parking_agent import ParkingAgent  # Asegúrate de importar correctamente ParkingAgent
+from parking_agent import ParkingAgent
+import pickle
+from parking_lot import ParkingLot 
 
 # Dimensiones de la ventana y vehículos
 WINDOW_WIDTH = 800
@@ -15,8 +17,23 @@ wheel_height = 12
 window_width = 10
 window_height = 10
 
-# Crear una instancia de ParkingAgent (asumiendo que tienes 16 espacios)
-agent = ParkingAgent(total_spaces=16)
+# Cargar modelo de ParkingAgent
+def load_model(filename="parking_agent.pkl"):
+    try:
+        with open(filename, 'rb') as f:
+            agent = pickle.load(f)
+        print(f"Modelo cargado desde {filename}.")
+        return agent
+    except FileNotFoundError:
+        print(f"El archivo {filename} no existe. Asegúrate de entrenar el modelo primero.")
+        return ParkingAgent(total_spaces=16)  # Crea un agente vacío si no se encuentra el archivo.
+
+# Crear instancia del agente
+agent = load_model()
+
+# Crear instancia de ParkingLot
+parking_lot = ParkingLot(total_spaces=16)
+
 
 class ParkingLot:
     def __init__(self, total_spaces):
@@ -143,33 +160,41 @@ def park_vehicles():
             messagebox.showerror("Error", "Por favor, ingresa un número mayor a 0.")
             return
 
-        if num_vehicles > len(parking_lot.spaces):
-            messagebox.showerror("Error", f"El número máximo de vehículos es {len(parking_lot.spaces)}.")
-            return
-
         spaces_occupied = 0
-        for vehicle_id in range(1, num_vehicles + 1):
-            state = parking_lot.spaces
-            action = agent.choose_action(state, parking_lot.space_types, vehicle_type)  # Ahora pasa los 3 parámetros
 
-            space = parking_lot.park_vehicle(vehicle_id, action, vehicle_type)
-            if space != -1:
-                animate_parking(vehicle_id, space)
-                spaces_occupied += 1
+        for vehicle_id in range(1, num_vehicles + 1):
+            parked = False
+            for space_index in range(len(parking_lot.spaces)):
+                if parking_lot.spaces[space_index] == 0:  # El espacio está vacío
+                    if agent.is_space_compatible(parking_lot.space_types[space_index], vehicle_type):
+                        parking_lot.park_vehicle(vehicle_id, space_index, vehicle_type)
+                        animate_parking(vehicle_id, space_index)
+                        spaces_occupied += 1
+                        parked = True
+                        break  # Sal del bucle interno y busca estacionar el siguiente vehículo
+            if not parked:
+                messagebox.showwarning(
+                    "Advertencia",
+                    f"No se pudo estacionar el vehículo {vehicle_id}. Espacios insuficientes o incompatibles."
+                )
+                break
 
         update_parking_display()
 
-        if spaces_occupied > 0:
-            messagebox.showinfo("Éxito", f"{spaces_occupied} vehículo(s) estacionado(s).")
+        if spaces_occupied == 0:
+            messagebox.showinfo("Información", "No se pudo estacionar ningún vehículo.")
+        elif spaces_occupied < num_vehicles:
+            messagebox.showinfo("Información", f"Se estacionaron {spaces_occupied} vehículos. Algunos no pudieron estacionarse.")
         else:
-            messagebox.showinfo("Lleno", "No hay espacio disponible para estacionar.")
+            messagebox.showinfo("Información", f"Se estacionaron los {num_vehicles} vehículos correctamente.")
+
     except ValueError:
         messagebox.showerror("Error", "Por favor, ingresa un número válido.")
 
 
 # Crear la ventana principal
 root = tk.Tk()
-root.title("Simulador de Estacionamiento")
+root.title("Gestión de parqueo de vehículos")
 root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
 
 # Variables globales

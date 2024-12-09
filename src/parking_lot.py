@@ -2,18 +2,16 @@ class ParkingLot:
     def __init__(self, total_spaces):
         self.total_spaces = total_spaces
         self.spaces = [0] * total_spaces  # Todos los espacios vacíos
-        self.vehicle_types = {}  # Diccionario para asociar vehículos con sus tipos
-        # Definir las reglas de estacionamiento para diferentes tipos de vehículos
+        self.vehicle_types = {} 
         self.parking_rules = {
             "pequeño": range(0, total_spaces // 3),
             "mediano": range(total_spaces // 3, 2 * (total_spaces // 3)),
-            "grande": range(2 * (total_spaces // 3), total_spaces)  # Solo en espacios grandes
+            "grande": range(2 * (total_spaces // 3), total_spaces) 
         }
-        # Atributo para almacenar los tipos de espacio
         self.space_types = ['pequeño'] * (total_spaces // 3) + \
                            ['mediano'] * (total_spaces // 3) + \
                            ['grande'] * (total_spaces - 2 * (total_spaces // 3))
-        self.last_displayed_state = list(self.spaces)  # Resetea el estado mostrado
+        self.last_displayed_state = list(self.spaces)  
 
     def find_empty_space(self):
         """Encuentra el primer espacio vacío."""
@@ -22,7 +20,6 @@ class ParkingLot:
                 return i
         return None
 
-    # Método para estacionar un vehículo en un espacio sugerido
     def park_vehicle(self, vehicle_id, suggested_space, vehicle_type="pequeño"):
         valid_spaces = self.parking_rules.get(vehicle_type, [])
         attempts = 0
@@ -36,7 +33,7 @@ class ParkingLot:
                 suggested_space = (suggested_space + 1) % self.total_spaces
                 attempts += 1
 
-        return -1  # No se pudo estacionar
+        return -1  
 
     def park_vehicles(self, num_vehicles, vehicle_type="pequeño"):
         parked_vehicles = []
@@ -53,7 +50,7 @@ class ParkingLot:
         """Resetea el estacionamiento."""
         self.spaces = [0] * self.total_spaces
         self.vehicle_types = {}
-        self.last_displayed_state = list(self.spaces)  # Resetea el estado mostrado
+        self.last_displayed_state = list(self.spaces)  
 
     def display_parking_lot(self):
         """Muestra el estado del estacionamiento solo si ha cambiado."""
@@ -62,7 +59,7 @@ class ParkingLot:
             for i in range(self.total_spaces):
                 print(f"Espacio {i + 1}: {'Ocupado' if self.spaces[i] != 0 else 'Vacío'}")
             print("\n")
-            self.last_displayed_state = list(self.spaces)  # Actualizamos el estado mostrado
+            self.last_displayed_state = list(self.spaces)  
 
     def get_state(self):
         """Devuelve el estado del estacionamiento como una lista."""
