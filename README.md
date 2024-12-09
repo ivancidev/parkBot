@@ -1,54 +1,79 @@
-# Proyecto Python
+# Instrucciones para Configurar y Ejecutar el Programa
 
-Este proyecto en Python utiliza un entorno virtual para gestionar sus dependencias.
+## Requisitos Previos
 
-## Configuración Inicial
+### Editor Recomendado
 
-Sigue estos pasos para configurar el proyecto desde cero.
+Se recomienda usar **Visual Studio Code (VS Code)** como editor de código.
+- Si aún no lo tienes instalado, puedes descargarlo desde: [https://code.visualstudio.com/](https://code.visualstudio.com/)
 
-### 1. Clona el repositorio
+### Versión de Python
 
+- Asegúrate de tener instalada la versión **Python 3.12** o superior.
+- Puedes verificar tu versión de Python ejecutando el siguiente comando en tu terminal:
 
-```
-git clone https://github.com/ivancidev/parkBot
-```
-
-### 2. Crea y activa el entorno virtual
-
-```
-python -m venv venv
+```bash
+python --version
 ```
 
- - En Linux/macOS:
- ```
-source venv/bin/activate
+- Si necesitas instalar Python, descárgalo desde: [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
- ```
+---
 
- - En Windows:
- ```
- .\venv\Scripts\activate
- ```
+## Instalación de Dependencias
 
- ### 3. Instala las dependencias
- ```
-pip install -r requirements.txt
- ```
+1. Abre una nueva terminal en tu editor de código o en tu sistema operativo.
+   - En Visual Studio Code, puedes abrir la terminal integrada con `Ctrl + \`` (combinación de teclas).
 
- - Instalar paquetes:
- ```
-    pip install gym gymnasium stable-baselines3 numpy
- ```
-- **Ejecuta con: `python parking.py`**
+2. Ejecuta el siguiente comando para instalar las dependencias necesarias:
 
-- Quizas al ejecutar te de error si tienes problemas con shimmy
-```
- pip install 'shimmy>=0.2.1'
+```bash
+pip install numpy
 ```
 
-- Si te aaprece segundo error con gymnasium ejecuta el siguiente:
-```
-pip install gymnasium==0.29.1
+Esto instalará la biblioteca **NumPy**, que es necesaria para el funcionamiento del programa. Todas las demás bibliotecas requeridas vienen preinstaladas con Python.
+
+---
+
+## Cómo Ejecutar el Programa
+
+### 1. Para Entrenar el Agente
+
+Corre el archivo `main.py` para entrenar al agente con el siguiente comando:
+
+```bash
+python main.py
 ```
 
-Con eso deberia correrte y aparecer un ventana de interfaz.
+Este archivo entrenará al agente y actualizará su modelo, que se guarda en un archivo llamado `parking_agent.pkl`.
+
+### 2. Para Usar la Interfaz y Estacionar Autos
+
+Corre el archivo `parking_ui.py` para abrir la interfaz gráfica y estacionar los vehículos:
+
+```bash
+python parking_ui.py
+```
+
+Una vez que la interfaz esté abierta, puedes interactuar con el simulador y observar cómo el agente toma decisiones para estacionar los vehículos.
+
+### 3. Abrir con un Ejecutable
+
+Ejecuta el archivo `parking_ui.exe` directamente para abrir la interfaz gráfica sin necesidad de usar la terminal.
+
+---
+
+## Notas Adicionales
+
+### Archivo del Modelo Guardado
+
+- El archivo `parking_agent.pkl` es donde se guarda el modelo entrenado del agente. Si no existe, el programa creará uno nuevo automáticamente al entrenar.
+
+### Reiniciar el Entrenamiento
+
+- Si deseas reiniciar el entrenamiento desde cero, elimina el archivo `parking_agent.pkl` antes de ejecutar `main.py`.
+
+### Exploración y Aprendizaje del Agente
+
+- Durante el entrenamiento, el agente ajustará su tabla Q para mejorar su toma de decisiones.
+- Puedes revisar la tabla Q cargada o actualizada al ejecutar `main.py`.

@@ -48,3 +48,5 @@ Si deseas reiniciar el entrenamiento desde cero, elimina el archivo parking_agen
 Exploración y Aprendizaje del Agente:
 
 Durante el entrenamiento, el agente ajustará su tabla Q para mejorar su toma de decisiones. Puedes revisar la tabla Q cargada o actualizada al ejecutar main.py.
+
+ABRIR CON UN EJECUTABLE: parking_ui.exe
