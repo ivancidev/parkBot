@@ -6,8 +6,10 @@ from parking_agent import ParkingAgent  # Asegúrate de importar correctamente P
 # Dimensiones de la ventana y vehículos
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
-VEHICLE_WIDTH = 80
-VEHICLE_HEIGHT = 50
+VEHICLE_WIDTH = 50
+VEHICLE_HEIGHT = 30
+PARK_WIDTH = 70
+PARK_HEIGHT = 35
 wheel_width = 12
 wheel_height = 12
 window_width = 10
@@ -36,7 +38,7 @@ class ParkingLot:
         return -1
 
 # Función de animación para mover los vehículos
-def animate_parking(vehicle_id, space, start_position=(0, 300)):
+def animate_parking(vehicle_id, space, start_position=(0, 0)):
     x_start, y_start = start_position
     x_dest, y_dest = parking_coordinates[space]
     
@@ -111,21 +113,21 @@ def recreate_parking_spaces(new_total):
 
     for i in range(new_total):
         if i < new_total // 3:
-            x = 50 + (i % 2) * (VEHICLE_WIDTH + 40)
-            y = 50 + (i // 2) * (VEHICLE_HEIGHT + 40)
+            x = 50 + (i % 2) * (PARK_WIDTH + 40)
+            y = 50 + (i // 2) * (PARK_HEIGHT + 40)
             color = "lightgreen"  # Pequeño
         elif i < 2 * (new_total // 3):
-            x = 300 + ((i - new_total // 3) % 2) * (VEHICLE_WIDTH + 40)
-            y = 50 + ((i - new_total // 3) // 2) * (VEHICLE_HEIGHT + 40)
+            x = 300 + ((i - new_total // 3) % 2) * (PARK_WIDTH + 40)
+            y = 50 + ((i - new_total // 3) // 2) * (PARK_HEIGHT + 40)
             color = "lightblue"  # Mediano
         else:
-            x = 600 + ((i - 2 * (new_total // 3)) % 2) * (VEHICLE_WIDTH + 40)
-            y = 50 + ((i - 2 * (new_total // 3)) // 2) * (VEHICLE_HEIGHT + 40)
+            x = 600 + ((i - 2 * (new_total // 3)) % 2) * (PARK_WIDTH + 40)
+            y = 50 + ((i - 2 * (new_total // 3)) // 2) * (PARK_HEIGHT + 40)
             color = "orange"  # Grande
 
-        rect = canvas.create_rectangle(x, y, x + VEHICLE_WIDTH, y + VEHICLE_HEIGHT, fill=color, tags=f"space{i}")
-        text = canvas.create_text(x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2, text=f"S{i + 1}", tags=f"text{i}")
-        parking_coordinates[i] = (x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2)
+        rect = canvas.create_rectangle(x, y, x + PARK_WIDTH, y + PARK_HEIGHT, fill=color, tags=f"space{i}")
+        text = canvas.create_text(x + PARK_WIDTH // 2, y + PARK_HEIGHT // 2, text=f"S{i + 1}", tags=f"text{i}")
+        parking_coordinates[i] = (x + PARK_WIDTH // 2, y + PARK_HEIGHT // 2)
         parking_buttons.append((rect, text))
 
     update_parking_display()
