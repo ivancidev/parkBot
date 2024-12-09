@@ -22,14 +22,16 @@ def main():
     # Puedes seguir entrenando el agente cargado
     num_vehicles = min(int(input("Ingrese el número de vehículos a estacionar: ")), total_spaces)
 
-    
     # Entrenar el agente con varios episodios
-    for _ in range(1):  # Entrena en 10 episodios
+    episodes = 10  # Número de episodios de entrenamiento
+    for episode in range(episodes):
+        print(f"Comenzando episodio {episode + 1}")
         parking_lot.reset()  # Limpia el estado del estacionamiento
-        reward = train_agent(agent, parking_lot, num_vehicles)
-        print(f"Total reward en este episodio: {reward}")
+        total_reward = train_agent(agent, parking_lot, num_vehicles)
+        print(f"Total reward en este episodio: {total_reward}")
 
-    save_model(agent)
+    # Guardar el modelo entrenado
+    save_model(agent, model_filename)
     print("Modelo guardado después del entrenamiento.")
 
 if __name__ == "__main__":
