@@ -1,122 +1,36 @@
-from parking_lot import ParkingLot
-from training import load_model 
 import tkinter as tk
 from tkinter import messagebox
 import time
+from parking_agent import ParkingAgent  # Asegúrate de importar correctamente ParkingAgent
 
-TOTAL_SPACES = 16
-WINDOW_WIDTH = 600
-WINDOW_HEIGHT = 400
-VEHICLE_WIDTH = 50
-VEHICLE_HEIGHT = 30
-wheel_width = 12  
+# Dimensiones de la ventana y vehículos
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+VEHICLE_WIDTH = 80
+VEHICLE_HEIGHT = 50
+wheel_width = 12
 wheel_height = 12
 window_width = 10
-window_height = 10  
-agent = load_model("parking_agent.pkl")  # Cambia la ruta si guardaste el modelo en otro lugar
+window_height = 10
 
+# Crear una instancia de ParkingAgent (asumiendo que tienes 16 espacios)
+agent = ParkingAgent(total_spaces=16)
 
-root = tk.Tk()
-root.title("Simulador de Estacionamiento")
-root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+class ParkingLot:
+    def __init__(self, total_spaces):
+        self.update_total_spaces(total_spaces)
 
-parking_lot = ParkingLot(TOTAL_SPACES)
+    def update_total_spaces(self, total_spaces):
+        self.spaces = [0] * total_spaces
+        self.space_types = ['pequeño'] * (total_spaces // 3) + \
+                           ['mediano'] * (total_spaces // 3) + \
+                           ['grande'] * (total_spaces - 2 * (total_spaces // 3))
 
-# Entrada para tipo de vehículo
-vehicle_type_label = tk.Label(root, text="Tipo de vehículo:")
-vehicle_type_label.pack()
-vehicle_type_var = tk.StringVar(value="pequeño")
-vehicle_type_menu = tk.OptionMenu(root, vehicle_type_var, "pequeño", "mediano", "grande")
-vehicle_type_menu.pack(pady=5)
-
-# Título
-title_label = tk.Label(root, text="Simulador de Estacionamiento", font=("Arial", 16))
-title_label.pack(pady=10)
-
-# Entrada para el número de vehículos
-vehicle_label = tk.Label(root, text="Número de vehículos a estacionar:")
-vehicle_label.pack()
-vehicle_entry = tk.Entry(root)
-vehicle_entry.pack(pady=5)
-
-# Botón para iniciar el estacionamiento
-park_button = tk.Button(root, text="Estacionar", command=lambda: park_vehicles())
-park_button.pack(pady=10)
-
-# Crear un lienzo principal
-canvas = tk.Canvas(root, width=WINDOW_WIDTH, height=WINDOW_HEIGHT, bg="white")
-canvas.pack()
-
-# Crear las coordenadas de los espacios y dibujar los botones
-parking_coordinates = {}
-parking_buttons = []
-
-for i in range(6):
-    x = 50 + (i % 2) * (VEHICLE_WIDTH + 20)
-    y = 50 + (i // 2) * (VEHICLE_HEIGHT + 20)
-    rect = canvas.create_rectangle(x, y, x + VEHICLE_WIDTH, y + VEHICLE_HEIGHT, fill="green", tags=f"space{i}")
-    text = canvas.create_text(x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2, text=f"L{i + 1}", tags=f"text{i}")
-    parking_coordinates[i] = (x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2)
-    parking_buttons.append((rect, text))
-
-for i in range(6, TOTAL_SPACES):
-    x = 300 + ((i - 6) % 2) * (VEHICLE_WIDTH + 20)
-    y = 50 + ((i - 6) // 2) * (VEHICLE_HEIGHT + 20)
-    rect = canvas.create_rectangle(x, y, x + VEHICLE_WIDTH, y + VEHICLE_HEIGHT, fill="green", tags=f"space{i}")
-    text = canvas.create_text(x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2, text=f"R{i - 5}", tags=f"text{i}")
-    parking_coordinates[i] = (x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2)
-    parking_buttons.append((rect, text))
-
-
-# Función para manejar el estacionamiento con animación
-def update_parking_display():
-    for i, (rect, text) in enumerate(parking_buttons):
-        if parking_lot.spaces[i] != 0:
-            canvas.itemconfig(rect, fill="red")
-            canvas.itemconfig(text, text=f"Vehículo {parking_lot.spaces[i]}")
-        else:
-            canvas.itemconfig(rect, fill="green")
-            canvas.itemconfig(text, text=f"L{i + 1}" if i < 6 else f"R{i - 5}")
-
-
-# Función para manejar el estacionamiento con el agente inteligente
-def park_vehicles():
-    try:
-        num_vehicles = int(vehicle_entry.get())
-        vehicle_type = vehicle_type_var.get()  # Tipo seleccionado
-
-        if num_vehicles <= 0:
-            messagebox.showerror("Error", "Por favor, ingresa un número mayor a 0.")
-            return
-
-        if num_vehicles > TOTAL_SPACES:
-            messagebox.showerror("Error", f"El número máximo de vehículos es {TOTAL_SPACES}.")
-            return
-
-        spaces_occupied = 0
-        for vehicle_id in range(1, num_vehicles + 1):
-            state = parking_lot.spaces
-            action = agent.choose_action(state)
-            
-            space = parking_lot.park_vehicle(vehicle_id, action, vehicle_type)
-            if space != -1:
-                animate_parking(vehicle_id, space)
-                reward = 1
-                spaces_occupied += 1
-            else:
-                reward = -1
-
-            next_state = parking_lot.spaces
-            agent.update_q_table(action, reward, next_state)
-
-        update_parking_display()
-
-        if spaces_occupied > 0:
-            messagebox.showinfo("Éxito", f"{spaces_occupied} vehículo(s) estacionado(s).")
-        else:
-            messagebox.showinfo("Lleno", "No hay espacio disponible para estacionar.")
-    except ValueError:
-        messagebox.showerror("Error", "Por favor, ingresa un número válido.")
+    def park_vehicle(self, vehicle_id, space, vehicle_type):
+        if self.spaces[space] == 0 and agent.is_space_compatible(self.space_types[space], vehicle_type):
+            self.spaces[space] = vehicle_id
+            return space
+        return -1
 
 
 # Función de animación para mover los vehículos
@@ -148,7 +62,144 @@ def animate_parking(vehicle_id, space, start_position=(0, 300)):
 
     for part in vehicle_parts:
         canvas.delete(part)
- 
 
-update_parking_display()
+
+# Función para manejar el estacionamiento con el agente inteligente
+def update_parking_display():
+    for i, (rect, text) in enumerate(parking_buttons):
+        if i < len(parking_lot.spaces) and parking_lot.spaces[i] != 0:
+            canvas.itemconfig(rect, fill="red")
+            canvas.itemconfig(text, text=f"Vehículo {parking_lot.spaces[i]}")
+        else:
+            space_type = parking_lot.space_types[i]
+            color = "lightgreen" if space_type == "pequeño" else "lightblue" if space_type == "mediano" else "orange"
+            canvas.itemconfig(rect, fill=color)
+            canvas.itemconfig(text, text=f"S{i + 1}")
+
+
+# Función para redimensionar el lienzo al tamaño de la ventana
+def resize_canvas(event):
+    canvas.config(width=event.width, height=event.height)
+    update_parking_display()
+
+
+# Función para cambiar el número de espacios de estacionamiento
+def change_total_spaces():
+    try:
+        new_total = int(total_spaces_entry.get())
+        if new_total < 1:
+            messagebox.showerror("Error", "El número de espacios debe ser mayor que 0.")
+            return
+        recreate_parking_spaces(new_total)
+    except ValueError:
+        messagebox.showerror("Error", "Por favor, ingresa un número válido.")
+
+
+# Crear el lienzo principal
+def recreate_parking_spaces(new_total):
+    global parking_coordinates, parking_buttons
+
+    parking_lot.update_total_spaces(new_total)
+    canvas.delete("all")
+    parking_coordinates = {}
+    parking_buttons = []
+
+    for i in range(new_total):
+        if i < new_total // 3:
+            x = 50 + (i % 2) * (VEHICLE_WIDTH + 40)
+            y = 50 + (i // 2) * (VEHICLE_HEIGHT + 40)
+            color = "lightgreen"  # Pequeño
+        elif i < 2 * (new_total // 3):
+            x = 300 + ((i - new_total // 3) % 2) * (VEHICLE_WIDTH + 40)
+            y = 50 + ((i - new_total // 3) // 2) * (VEHICLE_HEIGHT + 40)
+            color = "lightblue"  # Mediano
+        else:
+            x = 600 + ((i - 2 * (new_total // 3)) % 2) * (VEHICLE_WIDTH + 40)
+            y = 50 + ((i - 2 * (new_total // 3)) // 2) * (VEHICLE_HEIGHT + 40)
+            color = "orange"  # Grande
+
+        rect = canvas.create_rectangle(x, y, x + VEHICLE_WIDTH, y + VEHICLE_HEIGHT, fill=color, tags=f"space{i}")
+        text = canvas.create_text(x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2, text=f"S{i + 1}", tags=f"text{i}")
+        parking_coordinates[i] = (x + VEHICLE_WIDTH // 2, y + VEHICLE_HEIGHT // 2)
+        parking_buttons.append((rect, text))
+
+    update_parking_display()
+
+
+# Función para manejar el estacionamiento con el agente inteligente
+def park_vehicles():
+    try:
+        num_vehicles = int(vehicle_entry.get())
+        vehicle_type = vehicle_type_var.get()
+
+        if num_vehicles <= 0:
+            messagebox.showerror("Error", "Por favor, ingresa un número mayor a 0.")
+            return
+
+        if num_vehicles > len(parking_lot.spaces):
+            messagebox.showerror("Error", f"El número máximo de vehículos es {len(parking_lot.spaces)}.")
+            return
+
+        spaces_occupied = 0
+        for vehicle_id in range(1, num_vehicles + 1):
+            state = parking_lot.spaces
+            action = agent.choose_action(state, parking_lot.space_types, vehicle_type)  # Ahora pasa los 3 parámetros
+
+            space = parking_lot.park_vehicle(vehicle_id, action, vehicle_type)
+            if space != -1:
+                animate_parking(vehicle_id, space)
+                spaces_occupied += 1
+
+        update_parking_display()
+
+        if spaces_occupied > 0:
+            messagebox.showinfo("Éxito", f"{spaces_occupied} vehículo(s) estacionado(s).")
+        else:
+            messagebox.showinfo("Lleno", "No hay espacio disponible para estacionar.")
+    except ValueError:
+        messagebox.showerror("Error", "Por favor, ingresa un número válido.")
+
+
+# Crear la ventana principal
+root = tk.Tk()
+root.title("Simulador de Estacionamiento")
+root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+
+# Variables globales
+TOTAL_SPACES = 16
+parking_lot = ParkingLot(TOTAL_SPACES)
+parking_coordinates = {}
+parking_buttons = []
+
+# Entrada para tipo de vehículo
+vehicle_type_label = tk.Label(root, text="Tipo de vehículo:")
+vehicle_type_label.pack()
+vehicle_type_var = tk.StringVar(value="pequeño")
+vehicle_type_menu = tk.OptionMenu(root, vehicle_type_var, "pequeño", "mediano", "grande")
+vehicle_type_menu.pack(pady=5)
+
+# Entrada para el número de vehículos
+vehicle_label = tk.Label(root, text="Número de vehículos a estacionar:")
+vehicle_label.pack()
+vehicle_entry = tk.Entry(root)
+vehicle_entry.pack(pady=5)
+
+# Botón para iniciar el estacionamiento
+park_button = tk.Button(root, text="Estacionar", command=lambda: park_vehicles())
+park_button.pack(pady=10)
+
+# Entrada para modificar el total de espacios
+total_spaces_label = tk.Label(root, text="Total de espacios:")
+total_spaces_label.pack()
+total_spaces_entry = tk.Entry(root)
+total_spaces_entry.insert(0, str(TOTAL_SPACES))
+total_spaces_entry.pack(pady=5)
+update_spaces_button = tk.Button(root, text="Actualizar espacios", command=lambda: change_total_spaces())
+update_spaces_button.pack(pady=5)
+
+# Crear el lienzo principal
+canvas = tk.Canvas(root, bg="white")
+canvas.pack(fill=tk.BOTH, expand=True)
+
+recreate_parking_spaces(TOTAL_SPACES)
 root.mainloop()
