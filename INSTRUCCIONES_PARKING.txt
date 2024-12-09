@@ -15,17 +15,29 @@ Puedes verificar tu versión de Python ejecutando el siguiente comando en tu ter
 python --version
 Si necesitas instalar Python, descárgalo desde: https://www.python.org/downloads/
 
-Instalación de Dependencias
-Abre una nueva terminal en tu editor de código o en tu sistema operativo.
+Configuración del Entorno Virtual
+Abre una terminal en tu sistema o en Visual Studio Code.
 
-En Visual Studio Code, puedes abrir la terminal integrada con Ctrl + ` (combinación de teclas).
-Ejecuta el siguiente comando para instalar las dependencias necesarias:
+En Visual Studio Code, puedes abrir la terminal integrada con Ctrl + ñ (combinación de teclas).
+Crea un entorno virtual para el proyecto:
+Ejecuta el siguiente comando en la carpeta raíz del proyecto:
 
-pip install numpy
-Esto instalará la biblioteca NumPy, que es necesaria para el funcionamiento del programa.
-Todas las demás bibliotecas requeridas vienen preinstaladas con Python.
+python -m venv env
+Esto creará una carpeta llamada env, que contendrá el entorno virtual.
+Activa el entorno virtual:
+
+En Windows:
+.\env\Scripts\activate
+En Mac/Linux:
+source env/bin/activate
+
+Verifica que el entorno virtual esté activo:
+
+Deberías ver el prefijo (env) al inicio de tu terminal.
 
 Cómo Ejecutar el Programa
+En la carpeta raíz el siguiente comando:
+cd src
 1. Para Entrenar el Agente:
 Corre el archivo main.py para entrenar al agente con el siguiente comando:
 
